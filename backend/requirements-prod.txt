@@ -1,0 +1,10 @@
+# ---------------------------------------------------------------------------
+# Producción — instala esto EN VEZ del requirements.txt base
+#   pip install -r requirements-prod.txt
+# ---------------------------------------------------------------------------
+-r requirements.txt
+
+psycopg[binary]==3.3.5          # Driver de PostgreSQL (DB_ENGINE=postgresql)
+gunicorn==26.2.0                # Servidor WSGI; runserver NO es para producción
+whitenoise==6.12.0              # Sirve estáticos sin depender de Nginx
+dj-database-url==3.1.2          # Lee DATABASE_URL de un solo golpe (Heroku, Railway, Fly)

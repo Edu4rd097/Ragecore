@@ -1,0 +1,40 @@
+# ---------------------------------------------------------------------------
+# RageCore — Django (backend/) + Angular (frontend/)
+# backend/.gitignore y frontend/.gitignore siguen aplicando dentro de cada carpeta.
+# ---------------------------------------------------------------------------
+
+# --- Secretos ----------------------------------------------------------------
+.env
+.env.*
+!.env.example
+
+# --- Python / Django (backend) -----------------------------------------------
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+acd/
+*.sqlite3
+backend/media/
+backend/staticfiles/
+.coverage
+htmlcov/
+.pytest_cache/
+.ruff_cache/
+
+# --- Node / Angular (frontend) -----------------------------------------------
+node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/out-tsc/
+frontend/coverage/
+
+# --- Logs --------------------------------------------------------------------
+logs/
+*.log
+
+# --- IDE / herramientas / sistema operativo -----------------------------------
+.idea/
+.claude/
+.DS_Store
+Thumbs.db

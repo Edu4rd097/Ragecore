@@ -1,0 +1,97 @@
+{% extends "correos/base.html" %}
+{% comment %}
+  Comprobante de pago: correo y vista web (GET /api/pagos/{id}/comprobante/).
+  Contexto de core.comprobante.datos_comprobante; el PDF sale de la misma
+  función con ReportLab, así que ambos muestran lo mismo.
+{% endcomment %}
+
+{% block titulo %}Comprobante de pago #{{ folio }} · RageCore{% endblock %}
+{% block etiqueta %}Comprobante de pago{% endblock %}
+
+{% block contenido %}
+<!-- Total -->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+  <tr>
+    <td valign="top">
+      <div style="font-size:11px;font-weight:600;letter-spacing:1px;color:#a1a1aa;">TOTAL PAGADO</div>
+      <div style="font-family:Oswald,'Arial Narrow',Arial,sans-serif;font-weight:700;font-size:44px;line-height:1.05;color:#0095ff;">
+        {{ total }} <span style="font-family:Inter,Arial,sans-serif;font-size:13px;font-weight:600;color:#a1a1aa;">MXN</span>
+      </div>
+      <div style="font-size:12px;color:#6b6b73;margin-top:4px;">{{ membresia }} · {{ metodo }} · {{ fecha_pago }}</div>
+    </td>
+    <td align="right" valign="top">
+      <span style="display:inline-block;padding:4px 12px;border-radius:999px;background-color:{{ estatus_fondo }};color:{{ estatus_texto }};font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;">{{ estatus_display }}</span>
+      <div style="font-size:11px;color:#6b6b73;margin-top:8px;">Folio #{{ folio }}</div>
+    </td>
+  </tr>
+</table>
+
+<!-- Peleador -->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#0f1011"
+       style="background-color:#0f1011;border:1px solid #2a2d33;border-radius:10px;margin:22px 0 18px;">
+  <tr>
+    <td style="padding:12px 16px;">
+      <div style="font-size:10px;font-weight:600;letter-spacing:1px;color:#a1a1aa;">PELEADOR</div>
+      <div style="font-family:Oswald,'Arial Narrow',Arial,sans-serif;font-weight:700;font-size:18px;color:#f4f4f5;text-transform:uppercase;">{{ nombre }}</div>
+    </td>
+    <td align="right" style="padding:12px 16px;">
+      {% if apodo %}<div style="font-family:Oswald,'Arial Narrow',Arial,sans-serif;font-weight:500;font-size:14px;color:#0095ff;text-transform:uppercase;">“{{ apodo }}”</div>{% endif %}
+      <div style="font-size:10px;color:#6b6b73;">{{ codigo }}</div>
+    </td>
+  </tr>
+</table>
+
+<!-- Detalle -->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+  {% with fila="padding:9px 0;border-bottom:1px solid #2a2d33;font-size:13px;" %}
+  <tr><td style="{{ fila }}color:#a1a1aa;">Concepto</td><td align="right" style="{{ fila }}font-weight:600;">Pago de membresía</td></tr>
+  <tr><td style="{{ fila }}color:#a1a1aa;">Membresía</td><td align="right" style="{{ fila }}font-weight:600;">{{ membresia }}</td></tr>
+  {% if precio %}<tr><td style="{{ fila }}color:#a1a1aa;">Precio de la membresía</td><td align="right" style="{{ fila }}font-weight:600;">{{ precio }}</td></tr>{% endif %}
+  <tr><td style="{{ fila }}color:#a1a1aa;">Método de pago</td><td align="right" style="{{ fila }}font-weight:600;">{{ metodo }}</td></tr>
+  <tr><td style="{{ fila }}color:#a1a1aa;">Fecha de pago</td><td align="right" style="{{ fila }}font-weight:600;">{{ fecha_pago }}</td></tr>
+  {% if duracion %}<tr><td style="{{ fila }}color:#a1a1aa;">Días cubiertos</td><td align="right" style="{{ fila }}font-weight:600;">{{ duracion }}</td></tr>{% endif %}
+  {% if cubre_desde %}
+  <tr><td style="{{ fila }}color:#a1a1aa;">Periodo</td><td align="right" style="{{ fila }}font-weight:600;">{{ cubre_desde }} al {{ vence }}</td></tr>
+  {% elif vence %}
+  <tr><td style="{{ fila }}color:#a1a1aa;">Vigente hasta</td><td align="right" style="{{ fila }}font-weight:600;">{{ vence }}</td></tr>
+  {% endif %}
+  {% if referencia %}<tr><td style="{{ fila }}color:#a1a1aa;">Referencia en línea</td><td align="right" style="{{ fila }}font-weight:600;">{{ referencia }}</td></tr>{% endif %}
+  {% endwith %}
+</table>
+
+{% if acumulado %}
+<p style="margin:10px 0 0;font-size:12px;color:#33c1ff;">Estos días se sumaron a los que ya tenías vigentes.</p>
+{% endif %}
+
+<!-- Totales -->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#10263a"
+       style="background-color:#10263a;border-radius:10px;margin:18px 0 8px;">
+  {% if saldo %}
+  <tr>
+    <td style="padding:12px 16px 0;font-size:12px;font-weight:600;color:#eab308;">Saldo pendiente de la membresía</td>
+    <td align="right" style="padding:12px 16px 0;font-size:12px;font-weight:600;color:#eab308;">{{ saldo }}</td>
+  </tr>
+  {% endif %}
+  <tr>
+    <td style="padding:12px 16px;font-family:Oswald,'Arial Narrow',Arial,sans-serif;font-weight:700;font-size:17px;color:#f4f4f5;">TOTAL</td>
+    <td align="right" style="padding:12px 16px;font-family:Oswald,'Arial Narrow',Arial,sans-serif;font-weight:700;font-size:20px;color:#33c1ff;">{{ total }}</td>
+  </tr>
+</table>
+
+{% if nota %}<p style="margin:10px 0 0;font-size:12px;color:#6b6b73;">Nota: {{ nota }}</p>{% endif %}
+
+{% if frontend_url and not en_app %}
+<table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:22px;">
+  <tr>
+    <td bgcolor="#0095ff" style="background-color:#0095ff;border-radius:6px;">
+      <a href="{{ frontend_url }}/mi/pagos"
+         style="display:inline-block;padding:12px 22px;color:#ffffff;font-family:Oswald,'Arial Narrow',Arial,sans-serif;font-size:14px;
+                font-weight:500;letter-spacing:1px;text-transform:uppercase;text-decoration:none;">
+        Ver mis pagos
+      </a>
+    </td>
+  </tr>
+</table>
+{% endif %}
+<p style="margin:18px 0 0;font-size:11px;color:#6b6b73;">Emitido el {{ emitido|date:"d/m/Y" }} a las {{ emitido|date:"H:i" }}.</p>
+{% endblock %}

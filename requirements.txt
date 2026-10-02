@@ -1,0 +1,5 @@
+# Dependencias del backend (Django). Las versiones fijadas viven en backend/.
+#   pip install -r requirements.txt            # base
+#   pip install -r backend/requirements-dev.txt   # + herramientas de desarrollo
+#   pip install -r backend/requirements-prod.txt  # producción
+-r backend/requirements.txt

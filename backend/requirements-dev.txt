@@ -1,0 +1,11 @@
+# ---------------------------------------------------------------------------
+# Desarrollo — incluye las base más herramientas de trabajo
+#   pip install -r requirements-dev.txt
+# ---------------------------------------------------------------------------
+-r requirements.txt
+
+django-extensions==4.1          # shell_plus, graph_models para ver el diagrama ER
+drf-spectacular==0.30.0         # Documentación OpenAPI/Swagger automática
+pytest-django==4.14.0           # Alternativa a manage.py test
+coverage==7.16.0                # Cobertura de pruebas
+ruff==0.16.6                    # Linter y formateador

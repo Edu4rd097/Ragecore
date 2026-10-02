@@ -1,0 +1,12 @@
+Hola, {{ alumno.nombres }}.
+
+{{ notificacion.titulo|default:notificacion.get_tipo_display }}
+
+{{ notificacion.mensaje }}
+
+Ver en la app: {{ frontend_url }}/mi/notificaciones
+
+Fecha: {{ notificacion.fecha_envio|date:"d/m/Y H:i" }}
+
+--
+RageCore — Academia de combate. Este es un correo automático, por favor no lo respondas.

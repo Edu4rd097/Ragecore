@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <path d="M20 3 L44 3 L61 20 L61 44 L44 61 L20 61 L3 44 L3 20 Z" stroke="#0095ff" stroke-width="3" fill="#0f1011"/>
+  <path d="M20 3 L44 61 M44 3 L20 61 M3 20 L61 44 M61 20 L3 44" stroke="#0095ff" stroke-width="0.5" opacity="0.18"/>
+  <path d="M10 44 L44 10 L52 18 L18 52 Z" fill="#0095ff" opacity="0.9"/>
+  <text x="32" y="41" text-anchor="middle" font-family="Oswald, Arial, sans-serif" font-size="24" font-weight="700" fill="#fff" letter-spacing="-1">RC</text>
+</svg>

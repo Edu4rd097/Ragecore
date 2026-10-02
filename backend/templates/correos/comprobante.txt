@@ -1,0 +1,21 @@
+RAGECORE · Comprobante de pago #{{ folio }} — {{ estatus_display }}
+
+TOTAL PAGADO: {{ total }} MXN
+
+Peleador: {{ nombre }}{% if apodo %} "{{ apodo }}"{% endif %}
+Concepto: Pago de membresía
+Membresía: {{ membresia }}
+{% if precio %}Precio de la membresía: {{ precio }}
+{% endif %}Método de pago: {{ metodo }}
+Fecha de pago: {{ fecha_pago }}
+{% if duracion %}Días cubiertos: {{ duracion }}
+{% endif %}{% if cubre_desde %}Periodo: {{ cubre_desde }} al {{ vence }}
+{% elif vence %}Vigente hasta: {{ vence }}
+{% endif %}{% if acumulado %}Estos días se sumaron a los que ya tenías vigentes.
+{% endif %}{% if saldo %}Saldo pendiente de la membresía: {{ saldo }}
+{% endif %}{% if nota %}Nota: {{ nota }}
+{% endif %}
+Ver mis pagos: {{ frontend_url }}/mi/pagos
+
+--
+RageCore — Academia de combate. Este es un correo automático, por favor no lo respondas.

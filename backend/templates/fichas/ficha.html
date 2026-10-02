@@ -1,0 +1,470 @@
+{% load l10n %}{% localize off %}<!doctype html>
+{% comment %}
+  Ficha técnica del peleador (plantilla por alumno). Contexto: core/ficha_html.py
+  -> core/ficha.datos_ficha. Documento autocontenido: fuentes e imágenes van
+  incrustadas; no carga nada de fuera. Mismo diseño que el PDF (core/ficha_pdf.py).
+{% endcomment %}
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ficha técnica · {{ nombre }}</title>
+<style>
+{{ css_fuentes|safe }}
+:root {
+  --negro: #0a0a0b; --negro-900: #0f1011; --negro-800: #16171a; --negro-700: #1e2024;
+  --borde: #2a2d33; --azul: #0095ff; --azul-claro: #33c1ff; --azul-oscuro: #0059b3;
+  --texto: #f4f4f5; --suave: #a1a1aa; --tenue: #6b6b73;
+  --verde: #16a34a; --amarillo: #eab308; --rojo: #dc2626;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--negro); color: var(--texto); }
+body {
+  font-family: 'Inter', system-ui, sans-serif; font-size: 13px; line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  background-image: repeating-linear-gradient(45deg, rgba(255,255,255,.018) 0 1px, transparent 1px 14px);
+}
+.hoja { max-width: 860px; margin: 0 auto; padding: 0 20px 28px; position: relative; overflow: hidden; }
+.hoja::before {
+  content: ''; position: absolute; top: -40px; right: -90px; width: 90px; height: 260px;
+  background: rgba(0,149,255,.16); transform: rotate(-45deg); pointer-events: none;
+}
+.acento { height: 4px; background: var(--azul); }
+.titulo, h2, .num, .nombre, .apodo { font-family: 'Oswald', 'Inter', sans-serif; }
+
+/* Encabezado */
+.cabecera { display: flex; align-items: center; gap: 10px; padding: 18px 0 14px; border-bottom: 1px solid var(--borde); }
+.marca strong { display: block; font-family: 'Oswald', sans-serif; font-size: 18px; letter-spacing: .02em; line-height: 1.1; }
+.marca span { font-size: 9.5px; color: var(--suave); letter-spacing: .04em; }
+.folio { margin-left: auto; text-align: right; }
+.folio strong { display: block; font-family: 'Oswald', sans-serif; font-weight: 500; color: var(--azul-claro); font-size: 12.5px; }
+.folio span { font-size: 9.5px; color: var(--tenue); }
+
+/* Portada */
+.portada {
+  position: relative; margin-top: 18px; display: grid; grid-template-columns: 220px 1fr auto; gap: 22px; align-items: center;
+  background: var(--negro-800); border: 1px solid var(--borde); border-radius: 14px; padding: 20px 20px 20px 24px;
+}
+.portada::before { content: ''; position: absolute; left: 0; top: 14px; bottom: 14px; width: 3px; background: var(--azul); }
+.foto {
+  position: relative; width: 220px; aspect-ratio: 1; border-radius: 12px; overflow: hidden;
+  border: 2px solid var(--azul); box-shadow: 0 0 0 5px rgba(0,149,255,.14), 0 0 28px rgba(0,149,255,.35);
+  background: var(--negro-700); display: grid; place-items: center;
+}
+.foto img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.foto .iniciales { font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 84px; color: var(--azul); }
+.estado { position: absolute; top: 10px; left: 10px; }
+.kicker { font-size: 9.5px; font-weight: 700; color: var(--azul-claro); letter-spacing: .06em; }
+.nombre { margin: 4px 0 0; font-size: 34px; font-weight: 700; line-height: 1.02; text-transform: uppercase; }
+.apodo { margin-top: 6px; font-size: 21px; font-weight: 500; color: var(--azul); text-transform: uppercase; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.chip {
+  display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 9.5px; font-weight: 700;
+  letter-spacing: .03em; text-transform: uppercase; background: var(--negro-700); color: var(--texto); white-space: nowrap;
+}
+.record-fila { display: flex; align-items: center; gap: 18px; margin-top: 16px; flex-wrap: wrap; }
+.record { background: var(--negro-900); border: 1px solid var(--borde); border-radius: 10px; padding: 10px 14px; display: flex; gap: 22px; }
+.record .rot, .etq { font-size: 8.5px; font-weight: 600; color: var(--suave); letter-spacing: .05em; text-transform: uppercase; }
+.record .num { font-size: 34px; font-weight: 700; line-height: 1; display: block; }
+.record .raya { display: inline-block; width: 22px; height: 2px; margin-right: 6px; vertical-align: middle; }
+.efectividad .num { font-size: 30px; color: var(--azul); font-weight: 700; line-height: 1; }
+.lado { align-self: stretch; display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between; gap: 12px; }
+.qr { background: #fff; padding: 6px; border-radius: 8px; width: 118px; }
+.qr img { width: 100%; display: block; image-rendering: pixelated; }
+.qr-rot { font-size: 8px; color: var(--tenue); text-align: center; margin-top: 4px; letter-spacing: .05em; }
+.meta { text-align: right; font-size: 9.5px; color: var(--tenue); }
+
+/* Que ninguna celda de grid empuje el ancho de la página (celular). */
+.portada > *, .peso > *, .combate > *, .eval > *, .mosaico, .insignia > div { min-width: 0; }
+.nombre, .apodo, .insignia strong { overflow-wrap: anywhere; }
+
+/* Secciones */
+section { margin-top: 22px; break-inside: avoid; }
+.sec-cab { display: flex; align-items: center; gap: 12px; margin-bottom: 9px; }
+.sec-cab h2 { margin: 0; font-size: 18px; font-weight: 700; text-transform: uppercase; padding-left: 12px; border-left: 4px solid var(--azul); line-height: 1.05; }
+.sec-cab .linea { flex: 1; height: 1px; background: var(--borde); }
+.sec-cab .det { font-size: 10px; color: var(--tenue); }
+.tarjeta { background: var(--negro-800); border: 1px solid var(--borde); border-radius: 10px; }
+
+/* Mosaicos */
+.mosaicos { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.mosaico { position: relative; padding: 12px 12px 10px 15px; }
+.mosaico::before { content: ''; position: absolute; left: 0; top: 10px; bottom: 10px; width: 2.5px; background: var(--azul); }
+.mosaico.claro::before { background: var(--azul-claro); }
+.mosaico .valor { font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 24px; line-height: 1.1; margin-top: 4px; }
+.mosaico .sub { font-family: 'Inter', sans-serif; font-weight: 600; font-size: 11px; color: var(--azul-claro); margin-left: 6px; }
+.muestra { display: inline-block; width: 26px; height: 12px; border-radius: 3px; border: 1px solid var(--borde); margin-right: 8px; vertical-align: 3px; }
+
+/* Categoría de peso */
+.peso { display: grid; grid-template-columns: 1fr 1.25fr; gap: 20px; padding: 16px 18px; align-items: center; }
+.division { font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 30px; color: var(--azul); text-transform: uppercase; line-height: 1.05; margin: 2px 0; }
+.peso .rango { color: var(--suave); font-size: 11px; }
+.peso .ref { font-weight: 700; margin-top: 10px; }
+.peso .margen { font-size: 10px; color: var(--tenue); }
+.escala { display: grid; gap: 3px; margin-top: 8px; }
+.escala .casilla { text-align: center; }
+.escala .caja { background: var(--negro-700); border-radius: 4px; padding: 5px 0; font-size: 10px; color: var(--suave); }
+.escala .nom { font-size: 7.5px; font-weight: 600; color: var(--tenue); text-transform: uppercase; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.escala .actual .caja { background: var(--azul); color: #fff; font-weight: 700; box-shadow: 0 0 0 3px rgba(0,149,255,.25); }
+.escala .actual .nom { color: var(--texto); }
+.escala .actual::before { content: '▼'; display: block; color: var(--azul-claro); font-size: 9px; line-height: 1; margin-bottom: 2px; }
+.escala .casilla:not(.actual)::before { content: ''; display: block; height: 11px; }
+
+/* Récord */
+.combate { display: grid; grid-template-columns: 1.3fr 1fr; gap: 26px; padding: 16px 18px; }
+.pista { height: 14px; border-radius: 7px; background: var(--negro-700); overflow: hidden; display: flex; margin: 8px 0 10px; }
+.leyenda { display: flex; gap: 18px; flex-wrap: wrap; font-size: 11px; color: var(--suave); }
+.leyenda b { color: var(--texto); }
+.punto { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 5px; }
+.barra-fila { display: grid; grid-template-columns: 62px 1fr 18px; gap: 8px; align-items: center; font-size: 11px; margin-top: 7px; }
+.barra { height: 7px; border-radius: 4px; background: var(--negro-700); overflow: hidden; }
+.barra i { display: block; height: 100%; background: var(--azul); border-radius: 4px; }
+.barra-fila b { text-align: right; }
+.nota { font-size: 10px; color: var(--tenue); margin-top: 10px; }
+
+/* Evaluación */
+.eval { display: grid; grid-template-columns: 150px 1fr 150px; gap: 22px; padding: 16px 18px; align-items: center; }
+.medidor { text-align: center; }
+.medidor svg { width: 130px; height: 120px; }
+.medidor .total { font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 28px; fill: var(--texto); }
+.medidor .de { font-size: 8px; fill: var(--tenue); }
+.nivel { display: inline-block; background: var(--azul); color: #fff; font-size: 9px; font-weight: 700; padding: 3px 10px; border-radius: 999px; text-transform: uppercase; margin-top: -8px; }
+.cat-fila { display: grid; grid-template-columns: 112px 1fr 44px; gap: 10px; align-items: center; font-size: 11px; margin-top: 6px; }
+.cat-fila b { text-align: right; }
+.barra i.baja { background: var(--azul-oscuro); }
+.prep-fila { font-size: 11px; margin-top: 6px; }
+.prep-fila div { display: flex; justify-content: space-between; }
+.prep-fila b { color: var(--azul-claro); }
+.prep-fila .fina { height: 2px; background: var(--negro-700); margin-top: 2px; }
+.prep-fila .fina i { display: block; height: 100%; background: var(--azul); }
+.prep-total { font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 17px; margin-top: 8px; }
+
+/* Tablas */
+.tabla { overflow-x: auto; border-radius: 6px; }
+table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+th { background: var(--negro-900); color: var(--azul-claro); font-family: 'Oswald', sans-serif; font-weight: 500; font-size: 11px; text-transform: uppercase; text-align: left; padding: 9px 10px; border-bottom: 1.5px solid var(--azul); }
+td { padding: 9px 10px; border-bottom: 1px solid var(--borde); }
+tbody tr:nth-child(odd) { background: var(--negro-800); }
+tbody tr:nth-child(even) { background: var(--negro-700); }
+.fecha { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.vacio { padding: 16px; color: var(--tenue); font-size: 12px; }
+
+/* Chips de estado */
+.res-GANO { background: var(--verde); color: #fff; }
+.res-PERDIO { background: var(--rojo); color: #fff; }
+.res-EMPATO { background: var(--amarillo); color: var(--negro); }
+.res-PROXIMO { background: var(--azul); color: #fff; }
+.res-ASISTIO { background: var(--azul-oscuro); color: #fff; }
+.res-NO_ASISTIO { background: var(--negro-900); color: var(--texto); }
+.chip-verde { background: var(--verde); color: #fff; }
+.chip-rojo { background: var(--rojo); color: #fff; }
+.chip-azul { background: var(--azul); color: #fff; }
+
+/* Insignias */
+.insignias { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.insignia { display: flex; align-items: center; gap: 10px; padding: 12px; }
+.medalla { flex: none; width: 46px; height: 46px; border-radius: 50%; border: 1.5px solid var(--azul); box-shadow: 0 0 0 4px rgba(0,149,255,.15); background: var(--azul); display: grid; place-items: center; overflow: hidden; }
+.medalla img { width: 100%; height: 100%; object-fit: cover; }
+.medalla svg { width: 24px; height: 24px; fill: #fff; }
+.insignia strong { display: block; font-family: 'Oswald', sans-serif; font-weight: 500; font-size: 12.5px; text-transform: uppercase; line-height: 1.15; }
+.insignia span { font-size: 9.5px; color: var(--tenue); }
+
+/* Salud */
+.obs { display: grid; grid-template-columns: 120px 1fr; gap: 12px; padding: 12px 14px; border-bottom: 1px solid var(--borde); align-items: start; }
+.obs:last-child { border-bottom: 0; }
+.obs p { margin: 0; white-space: pre-line; }
+
+.pie { margin-top: 26px; padding-top: 10px; border-top: 1px solid var(--borde); display: flex; justify-content: space-between; gap: 12px; font-size: 9.5px; color: var(--tenue); flex-wrap: wrap; }
+.pie strong { color: var(--suave); }
+
+/* Celular */
+@media (max-width: 720px) {
+  .hoja { padding: 0 14px 22px; }
+  .portada { grid-template-columns: minmax(0, 1fr); justify-items: stretch; padding: 18px; }
+  .record { gap: 16px; flex-wrap: wrap; }
+  .record .num { font-size: 28px; }
+  .folio strong { font-size: 10.5px; }
+  .foto { width: 100%; max-width: 260px; justify-self: center; }
+  .lado { flex-direction: row; align-items: center; width: 100%; }
+  .meta { text-align: left; }
+  .nombre { font-size: 28px; }
+  .mosaicos, .insignias { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mosaico .valor { font-size: 21px; }
+  .sec-cab .det { display: none; }
+  .escala .caja { font-size: 8.5px; }
+  /* En celular no caben 11 nombres: solo se lee el de su división. */
+  .escala .casilla:not(.actual) .nom { visibility: hidden; }
+  .escala .actual .nom { overflow: visible; }
+  .peso, .combate, .eval { grid-template-columns: minmax(0, 1fr); }
+  .eval .medidor { justify-self: center; }
+  .folio span { display: none; }
+}
+@media print {
+  @page { size: A4; margin: 10mm; }
+  body { font-size: 11px; }
+  .hoja { max-width: none; padding: 0; }
+  .portada { grid-template-columns: 190px 1fr auto; }
+  .foto { width: 190px; }
+  .mosaicos, .insignias { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .sec-cab .det { display: inline; }
+  .peso { grid-template-columns: 1fr 1.25fr; }
+  .combate { grid-template-columns: 1.3fr 1fr; }
+  .eval { grid-template-columns: 150px 1fr 150px; }
+}
+</style>
+</head>
+<body>
+<div class="acento"></div>
+<main class="hoja">
+
+  <header class="cabecera">
+    <svg width="38" height="38" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+      <path d="M20 3 L44 3 L61 20 L61 44 L44 61 L20 61 L3 44 L3 20 Z" stroke="#0095ff" stroke-width="3" fill="#0f1011"/>
+      <path d="M10 44 L44 10 L52 18 L18 52 Z" fill="#0095ff" opacity="0.9"/>
+      <text x="32" y="41" text-anchor="middle" font-family="Oswald, sans-serif" font-size="24" font-weight="700" fill="#fff" letter-spacing="-1">RC</text>
+    </svg>
+    <div class="marca"><strong>RAGECORE</strong><span>ACADEMIA DE COMBATE</span></div>
+    <div class="folio">
+      <strong>FICHA TÉCNICA DEL PELEADOR</strong>
+      <span>ID {{ alumno.codigo_qr }} · Folio #{{ folio }}</span>
+    </div>
+  </header>
+
+  <!-- ============ PORTADA ============ -->
+  <section class="portada" aria-label="Datos del peleador">
+    <div class="foto">
+      {% if foto_uri %}<img src="{{ foto_uri }}" alt="Foto de {{ nombre }}">{% else %}<span class="iniciales">{{ iniciales }}</span>{% endif %}
+      <span class="chip estado {% if activo %}chip-verde{% else %}chip-rojo{% endif %}">{% if activo %}Activo{% else %}Baja{% endif %}</span>
+    </div>
+
+    <div>
+      <div class="kicker">PELEADOR RAGECORE</div>
+      <h1 class="nombre">{{ nombre }}</h1>
+      {% if apodo %}<div class="apodo">“{{ apodo }}”</div>{% endif %}
+      <div class="chips">
+        {% for disciplina in disciplinas %}<span class="chip">{{ disciplina }}</span>{% endfor %}
+        {% if cinturon %}
+          <span class="chip" style="background: {{ cinturon_color }}; color: {% if cinturon_claro %}#0a0a0b{% else %}#fff{% endif %};{% if cinturon_negro %} box-shadow: inset 0 0 0 1.5px #dc2626;{% endif %}">BJJ · {{ cinturon.nombre }}</span>
+        {% endif %}
+      </div>
+      <div class="record-fila">
+        <div class="record" aria-label="Récord">
+          <div><span class="num">{{ record.g }}</span><span class="rot"><i class="raya" style="background:var(--verde)"></i>Ganadas</span></div>
+          <div><span class="num">{{ record.p }}</span><span class="rot"><i class="raya" style="background:var(--rojo)"></i>Perdidas</span></div>
+          <div><span class="num">{{ record.e }}</span><span class="rot"><i class="raya" style="background:var(--amarillo)"></i>Empates</span></div>
+        </div>
+        <div class="efectividad"><span class="num">{{ efectividad }}</span><div class="etq">Efectividad</div></div>
+      </div>
+    </div>
+
+    <div class="lado">
+      {% if qr_uri %}
+        <div><div class="qr"><img src="{{ qr_uri }}" alt="QR de acceso"></div><div class="qr-rot">PASE DE ACCESO</div></div>
+      {% endif %}
+      <div class="meta">Miembro desde {{ miembro_desde }}<br>{{ horario }}</div>
+    </div>
+  </section>
+
+  <!-- ============ ESTADÍSTICAS ============ -->
+  <section>
+    <div class="sec-cab"><h2>Perfil físico y estadísticas</h2><span class="linea"></span></div>
+    <div class="mosaicos">
+      <div class="tarjeta mosaico"><div class="etq">Peso actual</div><div class="valor">{{ peso.actual_kg }}{% if peso.actual_lb != "—" %}<span class="sub">{{ peso.actual_lb }}</span>{% endif %}</div></div>
+      <div class="tarjeta mosaico"><div class="etq">Peso de competencia</div><div class="valor">{{ peso.competencia_kg }}{% if peso.competencia_lb != "—" %}<span class="sub">{{ peso.competencia_lb }}</span>{% endif %}</div></div>
+      <div class="tarjeta mosaico"><div class="etq">Estatura</div><div class="valor">{{ estadisticas.estatura }}</div></div>
+      <div class="tarjeta mosaico"><div class="etq">Edad</div><div class="valor">{{ estadisticas.edad }}</div></div>
+      <div class="tarjeta mosaico"><div class="etq">Cinturón BJJ</div><div class="valor">{% if cinturon %}<span class="muestra" style="background: {{ cinturon_color }}"></span>{{ cinturon.nombre }}{% else %}—{% endif %}</div></div>
+      <div class="tarjeta mosaico"><div class="etq">Puntos RageCore</div><div class="valor">{{ estadisticas.puntos }}</div></div>
+      <div class="tarjeta mosaico"><div class="etq">Asistencias totales</div><div class="valor">{{ estadisticas.asistencias_total }}</div></div>
+      <div class="tarjeta mosaico"><div class="etq">Asistencias este mes</div><div class="valor">{{ estadisticas.asistencias_mes }}</div></div>
+      <div class="tarjeta mosaico"><div class="etq">Racha actual</div><div class="valor">{{ estadisticas.racha }}</div></div>
+      <div class="tarjeta mosaico claro"><div class="etq">Racha máxima</div><div class="valor">{{ estadisticas.racha_maxima }}</div></div>
+      <div class="tarjeta mosaico"><div class="etq">Torneos disputados</div><div class="valor">{{ estadisticas.torneos }}</div></div>
+      <div class="tarjeta mosaico"><div class="etq">Sparrings</div><div class="valor">{{ estadisticas.sparrings }}</div></div>
+    </div>
+  </section>
+
+  <!-- ============ CATEGORÍA DE PESO ============ -->
+  <section>
+    <div class="sec-cab"><h2>Categoría de peso MMA</h2><span class="linea"></span>{% if peso.categoria %}<span class="det">{{ peso.categoria.organismo }}</span>{% endif %}</div>
+    {% if peso.categoria %}
+      <div class="tarjeta peso">
+        <div>
+          <div class="etq">División</div>
+          <div class="division">{{ peso.categoria.nombre }}</div>
+          <div class="rango">{{ peso.categoria.nombre_en }} · {{ peso.categoria.rango }}</div>
+          <div class="ref">{{ peso.referencia_kg }} · {{ peso.referencia_lb }}</div>
+          <div class="margen">Con {{ peso.fuente }} · {{ peso.categoria.margen }}</div>
+        </div>
+        <div>
+          <div class="etq">Límite por división (lb)</div>
+          <div class="escala" style="grid-template-columns: repeat({{ peso.divisiones|length }}, minmax(0, 1fr));">
+            {% for div in peso.divisiones %}
+              <div class="casilla{% if div.actual %} actual{% endif %}" title="Peso {{ div.nombre }}">
+                <div class="caja">{{ div.limite|cut:" lb" }}</div>
+                <div class="nom">{% if div.nombre == "semipesado" %}semip.{% elif div.nombre == "superpesado" %}súper{% else %}{{ div.nombre }}{% endif %}</div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <div class="tarjeta vacio">Captura el peso actual o de competencia para calcular su división de MMA.</div>
+    {% endif %}
+  </section>
+
+  <!-- ============ RÉCORD ============ -->
+  <section>
+    <div class="sec-cab"><h2>Récord de combate</h2><span class="linea"></span><span class="det">{{ record.total }} peleas</span></div>
+    <div class="tarjeta combate">
+      <div>
+        <div class="etq">Distribución de {{ record.total }} combates</div>
+        <div class="pista" role="img" aria-label="{{ record.g }} victorias, {{ record.p }} derrotas, {{ record.e }} empates">
+          <span style="width: {{ reparto.g|floatformat:2 }}%; background: var(--verde)"></span>
+          <span style="width: {{ reparto.p|floatformat:2 }}%; background: var(--rojo)"></span>
+          <span style="width: {{ reparto.e|floatformat:2 }}%; background: var(--amarillo)"></span>
+        </div>
+        <div class="leyenda">
+          <span><i class="punto" style="background:var(--verde)"></i><b>{{ record.g }}</b> Victorias · {{ reparto.g|floatformat:0 }}%</span>
+          <span><i class="punto" style="background:var(--rojo)"></i><b>{{ record.p }}</b> Derrotas · {{ reparto.p|floatformat:0 }}%</span>
+          <span><i class="punto" style="background:var(--amarillo)"></i><b>{{ record.e }}</b> Empates · {{ reparto.e|floatformat:0 }}%</span>
+        </div>
+        <div class="nota">Método de victoria favorito: {{ favorito }}</div>
+      </div>
+      <div>
+        <div class="etq">Victorias por método</div>
+        {% for metodo, n in metodos %}
+          <div class="barra-fila"><span>{{ metodo }}</span><span class="barra"><i style="width: {% widthratio n metodos_max 100 %}%"></i></span><b>{{ n }}</b></div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ EVALUACIÓN MMA ============ -->
+  {% if evaluacion %}
+  {% with calc=evaluacion.calculo med=evaluacion.medidor %}
+  <section>
+    <div class="sec-cab"><h2>Evaluación técnica MMA</h2><span class="linea"></span><span class="det">Última evaluación finalizada</span></div>
+    <div class="tarjeta eval">
+      <div class="medidor">
+        <svg viewBox="0 0 110 100" aria-label="Puntaje {{ calc.puntaje_total }} de {{ calc.puntaje_maximo }}">
+          <g transform="rotate({{ med.giro }} 55 55)">
+            <circle cx="55" cy="55" r="{{ med.radio }}" fill="none" stroke="#1e2024" stroke-width="9" stroke-linecap="round" stroke-dasharray="{{ med.arco }} {{ med.circunferencia }}"/>
+            <circle cx="55" cy="55" r="{{ med.radio }}" fill="none" stroke="#0095ff" stroke-width="9" stroke-linecap="round" stroke-dasharray="{{ med.lleno }} {{ med.circunferencia }}"/>
+          </g>
+          <text x="55" y="58" text-anchor="middle" class="total">{{ evaluacion.total_txt }}</text>
+          <text x="55" y="70" text-anchor="middle" class="de">de {{ calc.puntaje_maximo }} puntos</text>
+        </svg>
+        <div><span class="nivel">{{ calc.nivel }}</span></div>
+        <div class="nota">{{ evaluacion.fecha }} · {{ evaluacion.total_evaluaciones }} evaluación(es)</div>
+      </div>
+      <div>
+        <div class="etq">Desglose por categoría</div>
+        {% for cat in calc.categorias %}
+          <div class="cat-fila"><span>{{ cat.nombre }}</span><span class="barra"><i class="{% if cat.porcentaje < 50 %}baja{% endif %}" style="width: {{ cat.porcentaje|floatformat:1 }}%"></i></span><b>{{ cat.puntaje_txt }}/{{ cat.maximo }}</b></div>
+        {% endfor %}
+      </div>
+      <div>
+        <div class="etq">Preparación</div>
+        {% with p=calc.preparacion %}
+          <div class="prep-fila"><div><span>Técnica</span><b>{{ p.tecnica }}</b></div><div class="fina"><i style="width: {{ p.tecnica }}%"></i></div></div>
+          <div class="prep-fila"><div><span>Física</span><b>{{ p.fisica }}</b></div><div class="fina"><i style="width: {{ p.fisica }}%"></i></div></div>
+          <div class="prep-fila"><div><span>Defensa</span><b>{{ p.defensa }}</b></div><div class="fina"><i style="width: {{ p.defensa }}%"></i></div></div>
+          <div class="prep-fila"><div><span>Táctica</span><b>{{ p.tactica }}</b></div><div class="fina"><i style="width: {{ p.tactica }}%"></i></div></div>
+          <div class="prep-fila"><div><span>Disciplina</span><b>{{ p.disciplina }}</b></div><div class="fina"><i style="width: {{ p.disciplina }}%"></i></div></div>
+          <div class="prep-total">TOTAL {{ p.total }}</div>
+        {% endwith %}
+      </div>
+    </div>
+  </section>
+  {% endwith %}
+  {% endif %}
+
+  <!-- ============ HISTORIAL DE COMBATE ============ -->
+  <section>
+    <div class="sec-cab"><h2>Historial de combate</h2><span class="linea"></span><span class="det">{{ torneos_ganados }} ganados · {{ torneos_perdidos }} perdidos</span></div>
+    {% if torneos %}
+      <div class="tabla"><table>
+        <thead><tr><th>Fecha</th><th>Torneo / evento</th><th>Disciplina</th><th>Método</th><th>Resultado</th></tr></thead>
+        <tbody>
+          {% for t in torneos %}
+            <tr><td class="fecha">{{ t.fecha }}</td><td>{{ t.nombre }}</td><td>{{ t.disciplina }}</td><td>{{ t.metodo }}</td><td><span class="chip res-{{ t.resultado }}">{{ t.resultado_display }}</span></td></tr>
+          {% endfor %}
+        </tbody>
+      </table></div>
+    {% else %}
+      <div class="tarjeta vacio">Todavía no hay combates registrados en torneos.</div>
+    {% endif %}
+  </section>
+
+  <!-- ============ EVENTOS ============ -->
+  <section>
+    <div class="sec-cab"><h2>Eventos</h2><span class="linea"></span><span class="det">{{ eventos|length }} inscripciones</span></div>
+    {% if eventos %}
+      <div class="tabla"><table>
+        <thead><tr><th>Fecha</th><th>Evento</th><th>Tipo</th><th>Lugar</th><th>Resultado</th></tr></thead>
+        <tbody>
+          {% for e in eventos %}
+            <tr><td class="fecha">{{ e.fecha }}</td><td>{{ e.titulo }}</td><td>{{ e.tipo }}</td><td>{{ e.lugar }}</td><td><span class="chip res-{{ e.estado }}">{{ e.estado_display }}</span></td></tr>
+          {% endfor %}
+        </tbody>
+      </table></div>
+    {% else %}
+      <div class="tarjeta vacio">Sin inscripciones a eventos.</div>
+    {% endif %}
+  </section>
+
+  <!-- ============ GRADOS ============ -->
+  {% if grados %}
+  <section>
+    <div class="sec-cab"><h2>Grados y cinturones</h2><span class="linea"></span></div>
+    <div class="tabla"><table>
+      <thead><tr><th>Fecha</th><th>Disciplina</th><th>Grado</th><th>Otorgado por</th></tr></thead>
+      <tbody>
+        {% for g in grados %}
+          <tr><td class="fecha">{{ g.fecha }}</td><td>{{ g.disciplina }}</td><td>{{ g.grado }}</td><td>{{ g.otorgado_por }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table></div>
+  </section>
+  {% endif %}
+
+  <!-- ============ INSIGNIAS ============ -->
+  <section>
+    <div class="sec-cab"><h2>Insignias</h2><span class="linea"></span>{% if insignias %}<span class="det">{{ insignias|length }} desbloqueadas</span>{% endif %}</div>
+    {% if insignias %}
+      <div class="insignias">
+        {% for i in insignias %}
+          <div class="tarjeta insignia">
+            <div class="medalla">
+              {% if i.icono_uri %}<img src="{{ i.icono_uri }}" alt="">{% else %}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6-4.9-4.6 6.6-.8z"/></svg>{% endif %}
+            </div>
+            <div><strong>{{ i.nombre }}</strong><span>{{ i.fecha }}</span></div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="tarjeta vacio">Aún no desbloquea insignias. ¡A entrenar!</div>
+    {% endif %}
+  </section>
+
+  <!-- ============ SALUD Y NOTAS ============ -->
+  {% if lesion or notas %}
+  <section>
+    <div class="sec-cab"><h2>Salud y observaciones</h2><span class="linea"></span></div>
+    <div class="tarjeta">
+      {% if lesion %}<div class="obs"><span><span class="chip chip-rojo">Lesión activa</span></span><p>{{ lesion }}</p></div>{% endif %}
+      {% if notas %}<div class="obs"><span><span class="chip chip-azul">Notas del coach</span></span><p>{{ notas }}</p></div>{% endif %}
+    </div>
+  </section>
+  {% endif %}
+
+  <footer class="pie">
+    <strong>RAGECORE · Academia de combate</strong>
+    <span>Generada el {{ generada|date:"d/m/Y" }} a las {{ generada|date:"H:i" }}</span>
+  </footer>
+</main>
+</body>
+</html>
+{% endlocalize %}

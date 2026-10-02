@@ -1,0 +1,31 @@
+# ---------------------------------------------------------------------------
+# Dependencias base — necesarias para correr el proyecto
+# Versiones fijadas a las probadas con la suite de tests.
+#   pip install -r requirements.txt
+# ---------------------------------------------------------------------------
+
+# Framework
+Django==6.1.1
+
+# API REST
+djangorestframework==3.18.1     # ViewSets, serializers, autenticación por token
+django-filter==26.1             # Filtros por query string (?activo=true&horario=2)
+django-cors-headers==4.9.0      # Permite que el front (React/Flutter) consuma la API
+
+# Configuración
+python-decouple==3.8            # Lee el .env sin exponer secretos en el código
+
+# Códigos QR de alumnos y maestros
+qrcode==8.2                     # Genera el QR
+pillow==12.3.0                  # Requerido por qrcode y por los ImageField
+
+# Comprobante de pago en PDF (correo + descarga)
+xhtml2pdf==0.2.18               # Puro Python (usa reportlab) — sin dependencias nativas, a diferencia de WeasyPrint
+
+# Pagos en línea
+stripe==15.6.1                  # Checkout Sessions, webhooks firmados, reembolsos
+
+# Subdependencias (las instala pip solo, se listan para builds reproducibles)
+asgiref==3.12.1
+sqlparse==0.6.0
+typing_extensions==4.16.0

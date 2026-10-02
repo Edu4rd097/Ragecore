@@ -1,0 +1,31 @@
+{% extends "correos/base.html" %}
+
+{% block titulo %}{{ notificacion.titulo|default:notificacion.get_tipo_display }}{% endblock %}
+
+{% block etiqueta %}Notificación{% endblock %}
+
+{% block contenido %}
+<p style="margin:0 0 4px;font-size:13px;color:#a1a1aa;">Hola, {{ alumno.nombres }}.</p>
+
+<h1 style="margin:12px 0 16px;font-family:Oswald,'Arial Narrow',Arial,sans-serif;font-weight:700;font-size:22px;color:#f4f4f5;text-transform:uppercase;border-left:4px solid #0095ff;padding-left:12px;">
+  {{ notificacion.titulo|default:notificacion.get_tipo_display }}
+</h1>
+
+<p style="margin:0 0 24px;white-space:pre-line;color:#f4f4f5;">{{ notificacion.mensaje }}</p>
+
+<table role="presentation" cellpadding="0" cellspacing="0">
+  <tr>
+    <td bgcolor="#0095ff" style="background-color:#0095ff;border-radius:6px;">
+      <a href="{{ frontend_url }}/mi/notificaciones"
+         style="display:inline-block;padding:12px 22px;color:#ffffff;font-family:Oswald,'Arial Narrow',Arial,sans-serif;font-size:14px;
+                font-weight:500;letter-spacing:1px;text-transform:uppercase;text-decoration:none;">
+        Ver en la app
+      </a>
+    </td>
+  </tr>
+</table>
+
+<p style="margin:24px 0 0;font-size:12px;color:#6b6b73;">
+  {{ notificacion.fecha_envio|date:"d/m/Y H:i" }}
+</p>
+{% endblock %}

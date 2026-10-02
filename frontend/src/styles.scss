@@ -1,0 +1,574 @@
+/* ==========================================================================
+   ACADEMIA — Sistema de diseño
+   Negro de fondo, azul eléctrico de acento. Estética de cartel de pelea.
+   ========================================================================== */
+
+/* Las fuentes Oswald e Inter se cargan con un <link> en index.html */
+
+:root {
+  /* Negros: no usar #000 puro salvo en el fondo base, para que las capas se distingan */
+  --negro: #0a0a0b;
+  --negro-900: #0f1011;
+  --negro-800: #16171a;
+  --negro-700: #1e2024;
+  --negro-600: #2a2d33;
+  --borde: #2a2d33;
+  --borde-suave: #1e2024;
+
+  /* Acento (azul eléctrico; se conservan los nombres --rojo* para no tocar componentes) */
+  --rojo: #0095ff;
+  --rojo-claro: #33c1ff;
+  --rojo-oscuro: #0059b3;
+  --rojo-glow: rgba(0, 149, 255, 0.35);
+
+  /* Texto */
+  --texto: #f4f4f5;
+  --texto-suave: #a1a1aa;
+  --texto-tenue: #6b6b73;
+
+  /* Semáforo de pago */
+  --verde: #16a34a;
+  --amarillo: #eab308;
+  --rojo-alerta: #dc2626;
+
+  --r-sm: 6px;
+  --r: 10px;
+  --r-lg: 16px;
+
+  --sombra: 0 4px 24px rgba(0, 0, 0, 0.6);
+
+  --header-h: 60px;
+  --nav-h: 64px;
+  --sidebar-w: 232px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  background: var(--negro);
+  color: var(--texto);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Textura de fondo: diagonales apenas visibles, como lona de ring */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.012) 0px,
+    rgba(255, 255, 255, 0.012) 1px,
+    transparent 1px,
+    transparent 10px
+  );
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+  font-family: 'Oswald', 'Inter', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  margin: 0 0 0.5em;
+  line-height: 1.15;
+}
+
+h1 {
+  font-size: 1.7rem;
+}
+h2 {
+  font-size: 1.3rem;
+}
+h3 {
+  font-size: 1.05rem;
+}
+
+a {
+  color: var(--rojo-claro);
+  text-decoration: none;
+}
+
+/* --- Utilidades ---------------------------------------------------------- */
+
+.contenedor {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.pila {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.fila {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.fila-entre {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.envuelve {
+  flex-wrap: wrap;
+}
+.crece {
+  flex: 1;
+}
+.grid {
+  display: grid;
+  gap: 14px;
+}
+.grid-2 {
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+.grid-3 {
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+}
+.grid-4 {
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+.tenue {
+  color: var(--texto-suave);
+}
+.mini {
+  font-size: 0.8rem;
+}
+.centro {
+  text-align: center;
+}
+.mono {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Etiqueta pequeña en mayúsculas, muy usada en las fichas */
+.etiqueta {
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--texto-tenue);
+}
+
+/* Título de sección con barra roja a la izquierda */
+.titulo-seccion {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 14px;
+}
+.titulo-seccion::before {
+  content: '';
+  width: 4px;
+  height: 20px;
+  background: var(--rojo);
+  border-radius: 2px;
+  flex: none;
+}
+
+/* --- Tarjetas ------------------------------------------------------------ */
+
+.tarjeta {
+  background: var(--negro-800);
+  border: 1px solid var(--borde);
+  border-radius: var(--r);
+  padding: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.tarjeta-btn {
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    transform 0.15s,
+    background 0.15s;
+}
+.tarjeta-btn:hover {
+  border-color: var(--rojo);
+  transform: translateY(-2px);
+  background: var(--negro-700);
+}
+
+/* --- Botones ------------------------------------------------------------- */
+
+.btn {
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 500;
+  padding: 10px 18px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--borde);
+  background: var(--negro-700);
+  color: var(--texto);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.btn:hover:not(:disabled) {
+  border-color: var(--texto-tenue);
+  background: var(--negro-600);
+}
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-rojo {
+  background: var(--rojo);
+  border-color: var(--rojo);
+  color: #fff;
+}
+.btn-rojo:hover:not(:disabled) {
+  background: var(--rojo-claro);
+  border-color: var(--rojo-claro);
+  box-shadow: 0 0 18px var(--rojo-glow);
+}
+
+.btn-fantasma {
+  background: transparent;
+}
+
+.btn-bloque {
+  width: 100%;
+}
+
+.btn-mini {
+  padding: 6px 12px;
+  font-size: 0.75rem;
+}
+
+/* --- Formularios --------------------------------------------------------- */
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+label {
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+}
+
+input,
+select,
+textarea {
+  background: var(--negro-900);
+  border: 1px solid var(--borde);
+  border-radius: var(--r-sm);
+  color: var(--texto);
+  padding: 10px 12px;
+  font-family: inherit;
+  font-size: 0.92rem;
+  width: 100%;
+  transition: border-color 0.15s;
+}
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--rojo);
+  box-shadow: 0 0 0 3px rgba(0, 149, 255, 0.14);
+}
+input::placeholder,
+textarea::placeholder {
+  color: var(--texto-tenue);
+}
+
+select option {
+  background: var(--negro-800);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.error-campo {
+  color: var(--rojo-claro);
+  font-size: 0.78rem;
+}
+
+.aviso {
+  padding: 10px 14px;
+  border-radius: var(--r-sm);
+  font-size: 0.88rem;
+  border: 1px solid;
+}
+.aviso-error {
+  background: rgba(220, 38, 38, 0.1);
+  border-color: rgba(220, 38, 38, 0.45);
+  color: #fca5a5;
+}
+.aviso-ok {
+  background: rgba(22, 163, 74, 0.1);
+  border-color: rgba(22, 163, 74, 0.45);
+  color: #86efac;
+}
+
+/* --- Tablas -------------------------------------------------------------- */
+
+.tabla-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--borde);
+  border-radius: var(--r);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  min-width: 560px;
+}
+
+thead th {
+  background: var(--negro-900);
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+  text-align: left;
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--borde);
+  white-space: nowrap;
+}
+
+tbody td {
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--borde-suave);
+}
+
+tbody tr {
+  transition: background 0.12s;
+}
+tbody tr:last-child td {
+  border-bottom: none;
+}
+tbody tr:hover {
+  background: var(--negro-700);
+}
+tbody tr.clicable {
+  cursor: pointer;
+}
+
+/* --- Chips / estados ----------------------------------------------------- */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  border: 1px solid;
+  white-space: nowrap;
+}
+
+.chip-verde {
+  color: #86efac;
+  border-color: rgba(22, 163, 74, 0.5);
+  background: rgba(22, 163, 74, 0.12);
+}
+.chip-amarillo {
+  color: #fde047;
+  border-color: rgba(234, 179, 8, 0.5);
+  background: rgba(234, 179, 8, 0.12);
+}
+.chip-rojo {
+  color: #fca5a5;
+  border-color: rgba(220, 38, 38, 0.5);
+  background: rgba(220, 38, 38, 0.12);
+}
+.chip-gris {
+  color: var(--texto-suave);
+  border-color: var(--borde);
+  background: var(--negro-700);
+}
+
+/* --- Pestañas ------------------------------------------------------------ */
+
+.pestanas {
+  display: flex;
+  gap: 2px;
+  border-bottom: 1px solid var(--borde);
+  margin-bottom: 18px;
+  overflow-x: auto;
+}
+.pestanas button {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--texto-suave);
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 11px 16px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+.pestanas button:hover {
+  color: var(--texto);
+}
+.pestanas button.activa {
+  color: var(--rojo-claro);
+  border-bottom-color: var(--rojo);
+}
+
+/* --- Modal --------------------------------------------------------------- */
+
+.modal-fondo {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.78);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 200;
+}
+
+.modal-caja {
+  background: var(--negro-800);
+  border: 1px solid var(--borde);
+  border-top: 3px solid var(--rojo);
+  border-radius: var(--r);
+  width: 100%;
+  max-width: 520px;
+  max-height: 88vh;
+  overflow-y: auto;
+  box-shadow: var(--sombra);
+}
+.modal-caja.amplia {
+  max-width: 860px;
+}
+
+.modal-cabeza {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--borde);
+}
+.modal-cabeza h3 {
+  margin: 0;
+}
+
+.modal-cuerpo {
+  padding: 18px;
+}
+
+.modal-pie {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 18px;
+  border-top: 1px solid var(--borde);
+}
+
+.cerrar-x {
+  background: none;
+  border: none;
+  color: var(--texto-suave);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 4px;
+}
+.cerrar-x:hover {
+  color: var(--rojo-claro);
+}
+
+/* --- Barras de progreso (stats tipo videojuego) -------------------------- */
+
+.barra-pista {
+  height: 7px;
+  background: var(--negro-600);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.barra-valor {
+  height: 100%;
+  background: linear-gradient(90deg, var(--rojo-oscuro), var(--rojo-claro));
+  border-radius: 4px;
+  transition: width 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* --- Scrollbar ----------------------------------------------------------- */
+
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+::-webkit-scrollbar-track {
+  background: var(--negro-900);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--negro-600);
+  border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--rojo-oscuro);
+}
+
+/* --- Accesibilidad ------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--rojo-claro);
+  outline-offset: 2px;
+}
+
+/* Área segura en móviles con notch (importante en PWA instalada) */
+@supports (padding: max(0px)) {
+  .nav-inferior {
+    padding-bottom: max(0px, env(safe-area-inset-bottom));
+  }
+}

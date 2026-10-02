@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+{% comment %}
+  Base de todos los correos (comprobante, avisos, recordatorios). Diseño
+  RageCore: negro + azul eléctrico. Todo con tablas y estilos en línea porque
+  los clientes de correo (Gmail, Outlook) ignoran <style> y flex/grid; el
+  color de fondo va también como bgcolor para Outlook.
+{% endcomment %}
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="supported-color-schemes" content="dark">
+<title>{% block titulo %}RageCore{% endblock %}</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body style="margin:0;padding:0;background-color:#0a0a0b;font-family:Inter,Arial,Helvetica,sans-serif;color:#f4f4f5;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#0a0a0b" style="background-color:#0a0a0b;padding:24px 12px;">
+  <tr>
+    <td align="center">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#16171a"
+             style="max-width:580px;background-color:#16171a;border:1px solid #2a2d33;border-radius:14px;overflow:hidden;">
+
+        <!-- Cabecera -->
+        <tr>
+          <td bgcolor="#0f1011" style="background-color:#0f1011;border-top:4px solid #0095ff;padding:18px 28px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td width="44" valign="middle">
+                  <table role="presentation" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td width="36" height="36" align="center" valign="middle" bgcolor="#0f1011"
+                          style="width:36px;height:36px;border:2px solid #0095ff;border-radius:9px;color:#ffffff;
+                                 font-family:Oswald,'Arial Narrow',Arial,sans-serif;font-weight:700;font-size:15px;">
+                        RC
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+                <td valign="middle" style="padding-left:10px;">
+                  <div style="font-family:Oswald,'Arial Narrow',Arial,sans-serif;font-weight:700;font-size:19px;letter-spacing:1px;color:#f4f4f5;line-height:1.1;">RAGECORE</div>
+                  <div style="font-size:10px;letter-spacing:1.5px;color:#a1a1aa;">ACADEMIA DE COMBATE</div>
+                </td>
+                <td align="right" valign="middle"
+                    style="font-family:Oswald,'Arial Narrow',Arial,sans-serif;font-weight:500;font-size:12px;letter-spacing:1px;color:#33c1ff;text-transform:uppercase;">
+                  {% block etiqueta %}{% endblock %}
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="padding:28px;color:#f4f4f5;font-size:15px;line-height:1.5;">
+            {% block contenido %}{% endblock %}
+          </td>
+        </tr>
+
+        <!-- Pie -->
+        <tr>
+          <td bgcolor="#0f1011" style="background-color:#0f1011;padding:16px 28px;border-top:1px solid #2a2d33;">
+            <p style="margin:0;color:#6b6b73;font-size:12px;line-height:1.5;">
+              <strong style="color:#a1a1aa;">RageCore</strong> — Academia de combate. Este es un correo automático, por favor no lo respondas.
+              {% if frontend_url %}<br>
+              <a href="{{ frontend_url }}" style="color:#33c1ff;text-decoration:none;">{{ frontend_url }}</a>
+              {% endif %}
+            </p>
+          </td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+</body>
+</html>
